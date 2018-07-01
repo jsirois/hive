@@ -22,4 +22,4 @@ RUN /tmp/nvm/install.sh
 COPY rust /tmp/rust
 RUN /tmp/rust/install.sh
 
-CMD bash -i
+ENTRYPOINT ["bash", "-ic"]

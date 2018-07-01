@@ -50,4 +50,4 @@ exec docker run \
   -p 8000:8000 \
   --volume $(pwd):/dev/hive \
   ${IMAGE}:user \
-  "$@"
+  "$*"
