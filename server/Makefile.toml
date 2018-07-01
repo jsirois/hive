@@ -14,3 +14,45 @@ cd "${ROOT}/app/static/images"
 convert -scale 64x64 -background none icon.svg favicon.ico
 '''
 ]
+
+[tasks.app]
+dependencies = [
+  "generate-favicon"
+]
+script = [
+'''
+set -eu
+
+ROOT="$(git rev-parse --show-toplevel)"
+
+brunch build "${ROOT}/app"
+'''
+]
+
+[tasks.bundle]
+dependencies = [
+  "app",
+  "build-release"
+]
+script = [
+'''
+set -eu
+
+ROOT="$(git rev-parse --show-toplevel)"
+
+bundle="${ROOT}/dist/hive.tar"
+if [ ! -d "$(dirname "${bundle}")" ]; then
+  mkdir -p "$(dirname "${bundle}")"
+fi
+rm -f "${bundle}"*
+
+tar_bundle() {
+  tar -f "${bundle}" --transform "s/^/hive\//" "$@"
+}
+
+tar_bundle -c -C "${ROOT}/app" public
+tar_bundle -u -C "${ROOT}/server/target/release" hive-server
+
+xz --keep "${bundle}"
+'''
+]
