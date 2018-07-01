@@ -1,0 +1,4 @@
+[tasks.format-nightly]
+install_crate = "rustfmt"
+command = "cargo"
+args = ["fmt", "-v"]

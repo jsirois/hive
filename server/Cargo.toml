@@ -2,7 +2,9 @@
 name = "hive-server"
 version = "0.1.0"
 description = "The Hive game server."
+repository = "https://github.com/jsirois/hive"
 authors = ["John Sirois <john.sirois@gmail.com>"]
+license = "Apache-2.0"
 publish = false
 
 [dependencies]
