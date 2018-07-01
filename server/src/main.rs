@@ -43,6 +43,14 @@ fn main() {
         .required(true),
     )
     .arg(
+      Arg::with_name("address")
+        .help("The IP to bind.")
+        .value_name("IP")
+        .short("i")
+        .long("ip-address")
+        .default_value("localhost"),
+    )
+    .arg(
       Arg::with_name("port")
         .help("The port to bind the Hive web server to.")
         .value_name("PORT")
@@ -52,8 +60,12 @@ fn main() {
     )
     .get_matches();
 
+  let address = args.value_of("address").unwrap();
   let port = value_t!(args.value_of("port"), u16).unwrap_or_else(|e| e.exit());
-  let config = Config::build(Environment::Development).port(port).unwrap();
+  let config = Config::build(Environment::Development)
+    .address(address)
+    .port(port)
+    .unwrap();
 
   let app_dir: PathBuf = args
     .value_of("app_dir")
