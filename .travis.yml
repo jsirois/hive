@@ -4,4 +4,4 @@ services:
   - docker
 
 script:
-  - ./bin/dev_env.sh bash -ic "brunch build app && cargo make --cwd server"
+  - ./bin/ci.sh
