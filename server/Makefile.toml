@@ -2,3 +2,15 @@
 install_crate = "rustfmt"
 command = "cargo"
 args = ["fmt", "-v"]
+
+[tasks.generate-favicon]
+script = [
+'''
+set -eu
+
+ROOT="$(git rev-parse --show-toplevel)"
+
+cd "${ROOT}/app/static/images"
+convert -scale 64x64 -background none icon.svg favicon.ico
+'''
+]
