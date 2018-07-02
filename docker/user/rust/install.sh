@@ -8,11 +8,21 @@ export CARGO_HOME="${HOME}/.cargo"
 export PATH="${CARGO_HOME}/bin:${PATH}"
 rust_toolchain="$(cat $(dirname $0)/rust-toolchain)"
 
+RUST_COMPONENTS=(
+  rustfmt-preview
+  llvm-tools
+)
+
 rustup toolchain install "${rust_toolchain}"
-rustup component add --toolchain "${rust_toolchain}" rustfmt-preview
+rustup component add --toolchain "${rust_toolchain}" ${RUST_COMPONENTS[@]}
 rustup override set "${rust_toolchain}"
 
-cargo install --force cargo-make
+CARGO_TOOLS=(
+  cargo-make
+  cargo-binutils
+)
+
+cargo install ${CARGO_TOOLS[@]}
 
 cat << EOF >> "${HOME}/.bashrc"
 
