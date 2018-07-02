@@ -85,9 +85,10 @@ function get_user_image() {
       get_base_image
 
       user_context="$(mktemp -d)"
+      trap "rm -rf ${user_context}" EXIT
       cp -rp "${ROOT}/docker/user"/* "${user_context}"
-      cp -rp "${ROOT}/.nvmrc" "${user_context}/nvm/.nvmrc"
-      cp -rp "${ROOT}/rust-toolchain" "${user_context}/rust/rust-toolchain"
+      rm -f "${user_context}/nvm/.nvmrc" && cp -p "${ROOT}/.nvmrc" "${user_context}/nvm/.nvmrc"
+      rm -f "${user_context}/rust/rust-toolchain" && cp -p "${ROOT}/rust-toolchain" "${user_context}/rust/rust-toolchain"
 
       docker build \
         --build-arg BASE_ID=$(base_id) \
