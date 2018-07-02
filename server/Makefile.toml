@@ -4,9 +4,10 @@ command = "cargo"
 args = ["fmt", "-v"]
 
 [tasks.generate-favicon]
+script_runner = "bash"
 script = [
 '''
-set -eu
+set -euo pipefail
 
 ROOT="$(git rev-parse --show-toplevel)"
 
@@ -19,9 +20,10 @@ convert -scale 64x64 -background none icon.svg favicon.ico
 dependencies = [
   "generate-favicon"
 ]
+script_runner = "bash"
 script = [
 '''
-set -eu
+set -euo pipefail
 
 ROOT="$(git rev-parse --show-toplevel)"
 
@@ -34,9 +36,10 @@ dependencies = [
   "app",
   "build-release"
 ]
+script_runner = "bash"
 script = [
 '''
-set -eu
+set -euo pipefail
 
 ROOT="$(git rev-parse --show-toplevel)"
 
