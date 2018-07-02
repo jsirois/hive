@@ -1,15 +1,23 @@
-sudo: required
+matrix:
+  include:
 
-services:
-  - docker
+    - os: linux
+      sudo: required
+      services:
+        - docker
+      language: generic
+      env:
+        global:
+          # PUSH_IMAGES
+          secure: Z+CPBH/AhBaWWV4yLP/q/GFlU7ucRbH+860W5vAC7026nYOaQsQbZKusYIpoEY+XAQalqlAVsNIUT6TrC1C7H536DXGhvMScmsRc2QUJ/D+x0sstJj45OlkD8MyeYqFN4R/+H3k+5UOMontWKR1kElXwb8jiPFI1969g74qEuruewLDOTmEl8keaBg7dNOXbIKbLY9VikluoImsLn7SP9otyP7Rb03IS4EL/XzcdMrAO4ygRKewa+PZCfvoq2qFyljfHtuiefUrPb8Jbk93GLWKJ+V38eoX/pwh8df9QR3f3JIlFO79JB6QJnCJGocgePGWWtls8QXzwAIDRXOS76rsWNqpruL5exlQULdcZWvWcyMUpbDosCm9yDaaXlNrzdnnsfmtRBphVz6VeZCFDAGY31fFfMLOAnHwf36+RekvxCT3UC5eZeQjL3vuWP9lAmZqH4vSsfuQhQKcjgQHsxeeeAh1UHSMYYhPxyXR8jgP3V87jVYrSTY2VcPhuVifDQBiAepgtVTAp6j0Y1yYjl1WQdKi3rMeDaNpBGW29Z58c2AtUqs+9xO4X+z7/aF29ucnzzsHIxpXkog1DWttK1gv3OZltqIK2x6LnZdji9rA7EQm1fAomha2pITeDV41sGkbp0oea04MziMsTQA3wvDDL9U+w02D12jXuPZQOVq8=
+      script:
+        - "./bin/dev-env.sh ./bin/ci.sh"
 
-env:
-  global:
-    # PUSH_IMAGES
-    secure: Z+CPBH/AhBaWWV4yLP/q/GFlU7ucRbH+860W5vAC7026nYOaQsQbZKusYIpoEY+XAQalqlAVsNIUT6TrC1C7H536DXGhvMScmsRc2QUJ/D+x0sstJj45OlkD8MyeYqFN4R/+H3k+5UOMontWKR1kElXwb8jiPFI1969g74qEuruewLDOTmEl8keaBg7dNOXbIKbLY9VikluoImsLn7SP9otyP7Rb03IS4EL/XzcdMrAO4ygRKewa+PZCfvoq2qFyljfHtuiefUrPb8Jbk93GLWKJ+V38eoX/pwh8df9QR3f3JIlFO79JB6QJnCJGocgePGWWtls8QXzwAIDRXOS76rsWNqpruL5exlQULdcZWvWcyMUpbDosCm9yDaaXlNrzdnnsfmtRBphVz6VeZCFDAGY31fFfMLOAnHwf36+RekvxCT3UC5eZeQjL3vuWP9lAmZqH4vSsfuQhQKcjgQHsxeeeAh1UHSMYYhPxyXR8jgP3V87jVYrSTY2VcPhuVifDQBiAepgtVTAp6j0Y1yYjl1WQdKi3rMeDaNpBGW29Z58c2AtUqs+9xO4X+z7/aF29ucnzzsHIxpXkog1DWttK1gv3OZltqIK2x6LnZdji9rA7EQm1fAomha2pITeDV41sGkbp0oea04MziMsTQA3wvDDL9U+w02D12jXuPZQOVq8=
-
-language: generic
-
-script:
-  - "./bin/ci.sh"
+    - os: osx
+      osx_image: xcode8.3
+      install:
+        - "brew install imagemagick"
+        - "./docker/user/nvm/install.sh"
+        - "./docker/user/rust/install.sh"
+      script: "./bin/ci.sh"
 
