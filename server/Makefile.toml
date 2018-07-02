@@ -27,7 +27,7 @@ set -euo pipefail
 
 ROOT="$(git rev-parse --show-toplevel)"
 
-brunch build "${ROOT}/app"
+"${NVM_DIR}/nvm-exec" brunch build "${ROOT}/app"
 '''
 ]
 
@@ -43,19 +43,11 @@ set -euo pipefail
 
 ROOT="$(git rev-parse --show-toplevel)"
 
-bundle="${ROOT}/dist/hive.tar"
-if [ ! -d "$(dirname "${bundle}")" ]; then
-  mkdir -p "$(dirname "${bundle}")"
-fi
-rm -f "${bundle}"*
+bundle="${ROOT}/dist/hive"
+rm -rf "${bundle}" && mkdir -p "${bundle}"
+ln -s "${ROOT}/app/public" "${bundle}/"
+ln -s "${ROOT}/server/target/release/hive-server" "${bundle}/"
 
-tar_bundle() {
-  tar -f "${bundle}" --transform "s/^/hive\//" "$@"
-}
-
-tar_bundle -c -C "${ROOT}/app" public
-tar_bundle -u -C "${ROOT}/server/target/release" hive-server
-
-xz --keep "${bundle}"
+tar -Jhcf "${bundle}.tar.xz" -C "$(dirname "${bundle}")" "$(basename "${bundle}")"
 '''
 ]
