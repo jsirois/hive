@@ -18,5 +18,5 @@ matrix:
         - "brew install imagemagick"
         - "./docker/user/nvm/install.sh"
         - "./docker/user/rust/install.sh"
-      script: "./bin/ci"
+      script: "bash -ic ./bin/ci"
 
