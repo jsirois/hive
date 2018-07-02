@@ -19,5 +19,11 @@ matrix:
         - "brew install imagemagick"
         - "./docker/user/nvm/install.sh"
         - "./docker/user/rust/install.sh"
-      script: "bash -ic ./bin/ci"
+      env:
+        # Force `~/.bashrc` to be sourced by `bash`.
+        #
+        # This is important to pickup `~/.bashrc` edits during travis `install` in the various
+        # non-interactive invocations of `bash` (by `cargo-make`, via `#!/usr/bin/env bash`, etc).
+        - BASH_ENV=~/.bashrc
+      script: "./bin/ci"
 
