@@ -78,6 +78,9 @@ function get_user_image() {
   local -r user_hash=$(hash_dir "${ROOT}/docker/user")
 
   if [[ -z "$(docker images -q -f label=user_hash=${user_hash} ${user_image})" ]]; then
+    # Save stdout to fd3 and then redirect it to stderr.
+    exec 3>&1 1>&2
+
     maybe_pull ${user_image} ${user_hash} || (
       get_base_image
 
@@ -98,6 +101,9 @@ function get_user_image() {
 
       maybe_push ${user_image} ${user_hash}
     )
+
+    # Restore stdout and close fd3.
+    exec 1>&3 3>&-
   fi
 
   echo ${user_image}
