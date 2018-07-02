@@ -12,10 +12,12 @@ function hash_dir() {
   cat $(find "${dir}" -mindepth 1 -type f | sort) | git hash-object -t blob --stdin
 }
 
-base_hash=$(hash_dir "${ROOT}/docker/base")
+base_image="${IMAGE}:base"
+base_context="${ROOT}/docker/base"
+base_hash=$(hash_dir "${base_context}")
 
 function base_id() {
-  docker images -q -f label=base_hash=${base_hash} ${IMAGE}:base
+  docker images -q -f label=base_hash=${base_hash} ${base_image}
 }
 
 PUSH_IMAGES="${PUSH_IMAGES:-}"
@@ -57,39 +59,49 @@ function maybe_push() {
   fi
 }
 
-if [[ -z "$(base_id)" ]]; then
-  maybe_pull ${IMAGE}:base ${base_hash} || (
-    docker build \
-      --tag ${IMAGE}:base \
-      --label base_hash=${base_hash} \
-        "${ROOT}/docker/base"
+function get_base_image() {
+  if [[ -z "$(base_id)" ]]; then
+    maybe_pull ${base_image} ${base_hash} || (
+      docker build \
+        --tag ${base_image} \
+        --label base_hash=${base_hash} \
+          "${base_context}"
   
-    maybe_push ${IMAGE}:base ${base_hash}
-  )
-fi
+      maybe_push ${base_image} ${base_hash}
+    )
+  fi
+}
 
-user_name="$(id -un)"
-user_hash=$(hash_dir "${ROOT}/docker/user")
-if [[ -z "$(docker images -q -f label=user_hash=${user_hash} ${IMAGE}:${user_name})" ]]; then
-  maybe_pull ${IMAGE}:${user_name} ${user_hash} || (
-    user_context="$(mktemp -d)"
-    cp -rp "${ROOT}/docker/user"/* "${user_context}"
-    cp -rp "${ROOT}/.nvmrc" "${user_context}/nvm/.nvmrc"
-    cp -rp "${ROOT}/rust-toolchain" "${user_context}/rust/rust-toolchain"
+function get_user_image() {
+  local -r user_name="$(id -un)"
+  local -r user_image="${IMAGE}:${user_name}"
+  local -r user_hash=$(hash_dir "${ROOT}/docker/user")
 
-    docker build \
-      --build-arg BASE_ID=$(base_id) \
-      --build-arg USER=${user_name} \
-      --build-arg UID=$(id -u) \
-      --build-arg GROUP=$(id -gn) \
-      --build-arg GID=$(id -g) \
-      --tag ${IMAGE}:${user_name} \
-      --label user_hash=${user_hash} \
-        "${user_context}"
+  if [[ -z "$(docker images -q -f label=user_hash=${user_hash} ${user_image})" ]]; then
+    maybe_pull ${user_image} ${user_hash} || (
+      get_base_image
 
-    maybe_push ${IMAGE}:${user_name} ${user_hash}
-  )
-fi
+      user_context="$(mktemp -d)"
+      cp -rp "${ROOT}/docker/user"/* "${user_context}"
+      cp -rp "${ROOT}/.nvmrc" "${user_context}/nvm/.nvmrc"
+      cp -rp "${ROOT}/rust-toolchain" "${user_context}/rust/rust-toolchain"
+
+      docker build \
+        --build-arg BASE_ID=$(base_id) \
+        --build-arg USER=${user_name} \
+        --build-arg UID=$(id -u) \
+        --build-arg GROUP=$(id -gn) \
+        --build-arg GID=$(id -g) \
+        --tag ${user_image} \
+        --label user_hash=${user_hash} \
+          "${user_context}"
+
+      maybe_push ${user_image} ${user_hash}
+    )
+  fi
+
+  echo ${user_image}
+}
 
 exec docker run \
   --interactive \
@@ -97,5 +109,5 @@ exec docker run \
   --rm \
   -p 8000:8000 \
   --volume $(pwd):/dev/hive \
-  ${IMAGE}:${user_name} \
-  "$*"
+    $(get_user_image) \
+      "$*"
