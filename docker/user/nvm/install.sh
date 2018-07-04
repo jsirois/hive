@@ -2,12 +2,22 @@
 
 set -euo pipefail
 
-curl -sSfL https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash -
+NVM_DIR="${HOME}/.nvm"
+if [[ ! -d "${NVM_DIR}" ]]; then
+  curl -sSfL https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash -
+fi
+export NVM_DIR
 
-export NVM_DIR="${HOME}/.nvm"
-source "${NVM_DIR}/nvm.sh"
+source "${NVM_DIR}/nvm.sh" || true
 
 node_version="$(cat "$(dirname "$0")"/.nvmrc)"
-nvm install "${node_version}"
+nvm use "${node_version}" || nvm install "${node_version}"
 
-npm install -g brunch elm
+NPM_TOOLS=(
+  brunch
+  elm
+)
+
+for tool in ${NPM_TOOLS[@]}; do
+  which "${tool}" || NODE_VERSION="${node_version}" "${NVM_DIR}/nvm-exec" npm install -g "${tool}"
+done
