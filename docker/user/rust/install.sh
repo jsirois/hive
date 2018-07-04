@@ -2,10 +2,10 @@
 
 set -euo pipefail
 
-which rustup || curl -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain none
-
 export CARGO_HOME="${HOME}/.cargo"
 export PATH="${CARGO_HOME}/bin:${PATH}"
+
+which rustup || curl -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain none
 
 rust_toolchain="$(cat "$(dirname "$0")"/rust-toolchain)"
 
