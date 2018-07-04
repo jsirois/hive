@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-curl -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain none
+which rustup || curl -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain none
 
 export CARGO_HOME="${HOME}/.cargo"
 export PATH="${CARGO_HOME}/bin:${PATH}"
@@ -22,7 +22,9 @@ CARGO_TOOLS=(
   cargo-make
 )
 
-cargo install ${CARGO_TOOLS[@]}
+for tool in ${CARGO_TOOLS[@]}; do
+  which "${tool}" || cargo install "${tool}"
+done
 
 cat << EOF >> "${HOME}/.bashrc"
 
