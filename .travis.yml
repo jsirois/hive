@@ -2,6 +2,9 @@ language: generic
 
 cache:
   directories:
+    - $HOME/.nvm
+    - app/node_modules
+    - app/elm/elm-stuff
     - $HOME/.cargo
     - server/target
 
