@@ -20,7 +20,6 @@ rustup override set "${rust_toolchain}"
 
 CARGO_TOOLS=(
   cargo-make
-  cargo-binutils
 )
 
 cargo install ${CARGO_TOOLS[@]}
