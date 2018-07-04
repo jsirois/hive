@@ -1,5 +1,10 @@
 language: generic
 
+cache:
+  directories:
+    - $HOME/.cargo
+    - server/target
+
 matrix:
   include:
 
