@@ -1,16 +1,27 @@
 module Main exposing (..)
 
 import Html exposing (Html, text)
-import Window exposing (resizes, Size)
+import Task exposing (Task)
+import Window exposing (resizes, size, Size)
 
 
 type alias Model =
     Size
 
 
+processSize : Result x Size -> Size
+processSize result =
+    case result of
+        Ok size ->
+            size
+
+        Err _ ->
+            { width = 0, height = 0 }
+
+
 init : ( Model, Cmd WindowResize )
 init =
-    ( { width = 0, height = 0 }, Cmd.none )
+    ( { width = 0, height = 0 }, Task.attempt processSize Window.size )
 
 
 view : Model -> Html WindowResize
