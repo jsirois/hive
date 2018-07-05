@@ -6,44 +6,56 @@ import Window exposing (resizes, size, Size)
 
 
 type alias Model =
-    Size
+    { windowSize : Maybe Size
+    }
 
 
-processSize : Result x Size -> Size
+type Msg
+    = Nop
+    | WindowSize Size
+
+
+processSize : Result x Size -> Msg
 processSize result =
     case result of
         Ok size ->
-            size
+            WindowSize size
 
         Err _ ->
-            { width = 0, height = 0 }
+            Nop
 
 
-init : ( Model, Cmd WindowResize )
+init : ( Model, Cmd Msg )
 init =
-    ( { width = 0, height = 0 }, Task.attempt processSize Window.size )
+    ( { windowSize = Nothing }, Task.attempt processSize Window.size )
 
 
-view : Model -> Html WindowResize
+view : Model -> Html Msg
 view model =
-    text ("Window is " ++ toString model.width ++ "x" ++ toString model.height)
+    case model.windowSize of
+        Just size ->
+            text ("Window is " ++ toString size.width ++ "x" ++ toString size.height)
+
+        Nothing ->
+            text "Unknown window size!"
 
 
-type alias WindowResize =
-    Size
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg model =
+    case msg of
+        WindowSize size ->
+            ( { windowSize = Just size }, Cmd.none )
+
+        Nop ->
+            ( model, Cmd.none )
 
 
-update : WindowResize -> Model -> ( Model, Cmd WindowResize )
-update resize size =
-    ( resize, Cmd.none )
-
-
-handleResize : Size -> WindowResize
+handleResize : Size -> Msg
 handleResize size =
-    size
+    WindowSize size
 
 
-subscriptions : Model -> Sub WindowResize
+subscriptions : Model -> Sub Msg
 subscriptions model =
     Window.resizes handleResize
 
