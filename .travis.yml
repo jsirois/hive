@@ -2,6 +2,7 @@ language: generic
 
 cache:
   directories:
+    - $HOME/Library/Caches/Homebrew
     - $HOME/.nvm
     - $HOME/.cargo
     - server/target
