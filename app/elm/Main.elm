@@ -50,14 +50,14 @@ update msg model =
             ( model, Cmd.none )
 
 
-handleResize : Size -> Msg
-handleResize size =
-    WindowSize size
+
+
+
 
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Window.resizes handleResize
+    Window.resizes WindowSize
 
 
 main =
